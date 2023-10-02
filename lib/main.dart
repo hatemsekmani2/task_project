@@ -26,6 +26,7 @@ class MyApp extends StatelessWidget {
       routes: {
         "/posts" : (context) => const AllPosts()
       },
+      initialRoute: "/posts",
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -38,7 +39,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      //home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }

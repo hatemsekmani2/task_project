@@ -24,23 +24,25 @@ class PostsController extends GetxController{
    PostsStates loadingPostsForFirstTimeState = const LoadingPostsForFirstTimeState();
    PostsStates errorLoadingPostsState = const PostsErrorLoadingState();
   static PostsController getInstance(){
-    _instance = PostsController._();
+    _instance = PostsController();
     return _instance!;
   }
+  PostsController();
 
   Future<void> getPosts({bool? refreshlatestPosts}) async{
    try{
-    if(GeneralVariables.currentPageNumber == 1) {
+     if(refreshlatestPosts!=null){
+
+       currentState = loadingPostsForFirstTimeState;
+       GeneralVariables.currentPageNumber = 1;
+       GeneralVariables.getAllPostsUrl = "api/posts/v1/all?page=1";
+       posts = [];
+       update();
+     }
+    else if(GeneralVariables.currentPageNumber == 1) {
       currentState = loadingPostsForFirstTimeState;
       update();
 
-    }
-    else if(refreshlatestPosts!=null){
-      currentState = loadingPostsForFirstTimeState;
-      GeneralVariables.currentPageNumber = 1;
-      GeneralVariables.getAllPostsUrl = "api/posts/v1/all?page=1";
-      posts = [];
-      update();
     }
     else{
       currentState = loadingPostsState;
@@ -55,14 +57,12 @@ class PostsController extends GetxController{
       if(_allPostResponse!.data !=null
           && _allPostResponse!.data!.items!=null
           && _allPostResponse!.data!.items!.isNotEmpty) {
-          log("yessssssssss");
         for (var item in _allPostResponse!.data!.items!) {
-          log(item.id!.toString());
           posts.add(item);
         }
 
         GeneralVariables.getAllPostsUrl = _allPostResponse!.data!.nextPageUrl!.replaceAll(NetworkConstants.mainRoute, "");
-        GeneralVariables.currentPageNumber = (_allPostResponse!.data!.currentPage??1).toInt();
+        GeneralVariables.currentPageNumber++;
         currentState = finishedLoadingPostsState;
         update();
       }
@@ -76,19 +76,15 @@ class PostsController extends GetxController{
     }
    }
       catch(error) {
-     log(error.toString());
         currentState = errorLoadingPostsState;
 
         Get.snackbar("Error Happened", error.toString(),backgroundColor: Colors.red.withOpacity(0.8),snackPosition: SnackPosition.BOTTOM);
-        log( error.toString());
         update();
 
       }
     }
 
-/*
-    for(int i = 1;i<=pageSize;i++){
-    }*/
+
 
   Future<TaskSnapshot?> uploadMedia(var pickedFile,String id) async{
     CommonThings.showLoadingDialog(Get.context!,"Uploading Media...");
@@ -122,7 +118,7 @@ class PostsController extends GetxController{
 
   Future<void> uploadPost(String content,TaskSnapshot? mediaData, info) async{
     try{
-      CommonThings.showLoadingDialog(Get.context!, "Posting....");
+    CommonThings.showLoadingDialog(Get.context!, "Posting....");
     var body = <String,dynamic>{};
     if(mediaData!=null) {
       String url = await mediaData.ref.getDownloadURL();
@@ -153,13 +149,27 @@ class PostsController extends GetxController{
     }
       NetworkHandlerHttpMethods.getInstance().makeHttpPostCall("api/posts/v1/add", body: body).then((value) {
         if(value.statusCode == 200 || value.statusCode == 201) {
-          Get.snackbar("Posting Done", "Post is Uploaded Successfully",backgroundColor: Colors.white.withOpacity(0.8),snackPosition: SnackPosition.BOTTOM);
+          Get.snackbar("Posting Done", "Post is Uploaded Successfully",backgroundColor: Colors.white.withOpacity(0.8),snackPosition: SnackPosition.BOTTOM,);
 
-          GeneralVariables.currentPageNumber = 1;
-          GeneralVariables.getAllPostsUrl = "api/posts/v1/all?page=1";
-          Timer(const Duration(seconds: 2),() => Navigator.of(Get.context!,rootNavigator: true).pushNamedAndRemoveUntil("/posts", (route) => false),);
+          //GeneralVariables.currentPageNumber = 1;
+         // GeneralVariables.getAllPostsUrl = "api/posts/v1/all?page=${GeneralVariables.currentPageNumber}";
+         // posts = [];
+
+          Timer(const Duration(seconds: 2),() {
+
+            GeneralVariables.postsController.getPosts(refreshlatestPosts: true);
+            Navigator.of(Get.context!, rootNavigator: true)
+                  .popUntil(ModalRoute.withName("/posts"));
+
+
+
+
+
+            },);
+
         }
         else{
+          Navigator.of(Get.context!).pop();
           Get.snackbar("Post Error", value.body,backgroundColor: Colors.red.withOpacity(0.8),snackPosition: SnackPosition.BOTTOM);
         }
       });

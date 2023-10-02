@@ -90,13 +90,10 @@ class PostsListWidget extends StatelessWidget {
    PostsListWidget(this.controller,{super.key});
   @override
   Widget build(BuildContext context) {
-     if(!listController.hasListeners) {
-       listController.addListener(() {
-         if(listController.position.atEdge &&listController.position.pixels!=0) {
-           GeneralVariables.postsController.getPosts();
-         }
-       });
-     }
+
+    initilizeListenerForTheEndOfTheVisiblePosts();
+
+
     return  Expanded(
       child: RefreshIndicator(
         onRefresh: () => GeneralVariables.postsController.getPosts(refreshlatestPosts: true),
@@ -109,6 +106,16 @@ class PostsListWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void initilizeListenerForTheEndOfTheVisiblePosts() {
+    if(!listController.hasListeners) {
+      listController.addListener(() {
+        if(listController.position.atEdge &&listController.position.pixels!=0) {
+          GeneralVariables.postsController.getPosts();
+        }
+      });
+    }
   }
 }
 

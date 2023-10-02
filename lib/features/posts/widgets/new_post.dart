@@ -21,7 +21,7 @@ class _NewPostState extends State<NewPost> {
   Widget build(BuildContext context) {
     return  Scaffold(
       appBar:  AppBar(
-        title: Text('New Post'),
+        title: const Text('New Post'),
       ),
 
       body: Container(
