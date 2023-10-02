@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "565753001401",
+    "project_id": "poststaskproject",
+    "storage_bucket": "poststaskproject.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:565753001401:android:6ae6b388d41e2ebdd93268",
+        "android_client_info": {
+          "package_name": "com.example.task_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbwHYZyapUE_wqMRO-_AxmUD0G8P62qx8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
